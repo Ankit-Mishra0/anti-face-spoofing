@@ -23,7 +23,7 @@ class FaceAntiSpoofCNN(nn.Module):
 
         x = x.view(x.size(0), -1)               # Flatten
         x = F.relu(self.fc1(x))
-        x = x = self.fc2(x)
+        x = self.fc2(x)
 
 
         return x
