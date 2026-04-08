@@ -46,7 +46,8 @@ while True:
         with torch.no_grad():
             confidence = torch.sigmoid(antispoofmodel(facetensor)).item()
 
-        if confidence > 0.8:
+        threshold = 0.5 + (0.3 * (1 - confidence))
+        if confidence > threshold:
             recentpredictions.append(0)
             displaylabel, boxcolor = "REAL", (0, 255, 0)
         else:
