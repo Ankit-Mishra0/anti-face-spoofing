@@ -1,206 +1,130 @@
-# Face Anti-Spoofing
-
-A deep learning project for detecting face spoofing attacks (presentation attacks) using a Convolutional Neural Network (CNN). This system can distinguish between genuine live faces and spoofed faces (photos, videos, masks, etc.).
+# Face Anti-Spoofing System
 
 ## Overview
 
-Face anti-spoofing is a critical security component for facial recognition systems. This project implements a CNN-based solution to detect whether a face presented to a camera is a live person or a spoofing attempt.
+This project implements a real-time face anti-spoofing system using a Convolutional Neural Network (CNN) to detect whether a face in a video stream is real or spoofed (e.g., from a photo, video, or mask). The system uses OpenCV for face detection and PyTorch for the deep learning model. If spoofing is detected consistently over a sliding window of frames, the system locks the computer screen for security.
+
+This project was developed as a Computer Vision (CV) project by:
+
+- **Ankit Mishra** (2023UCS1711)
+- **Amit Kumar** (2023UCS1744)
 
 ## Features
 
-- **CNN-based Detection**: Custom lightweight CNN architecture for binary classification (real vs. spoof)
-- **Real-time Detection**: Webcam-based live inference with Haar Cascade face detection
-- **Dataset Support**: Support for color and depth-based datasets
-- **PyTorch Implementation**: Modern deep learning framework for flexibility and performance
-- **Class Imbalance Handling**: Weighted loss function to handle imbalanced datasets
-
-## Project Structure
-
-```
-face-anti-spoofing/
-├── models/
-│   ├── cnn_model.py              # CNN architecture definition
-│   └── face_antispoof_cnn.pth     # Trained model weights
-├── dataset/
-│   ├── archive/                  # Archive dataset with color and depth
-│   ├── real/                      # Real face samples
-│   └── spoof/                     # Spoofed face samples
-├── train.py                       # Model training script
-├── prepare_dataset.py             # Dataset preparation utilities
-├── dataset_loader.py              # Custom data loader
-├── realtime_demo.py               # Live webcam inference
-├── realtime_demotest.py           # Testing the real-time demo
-├── test.py                        # Model testing/evaluation
-├── test_camera.py                 # Camera functionality test
-├── test_loader.py                 # Dataset loader test
-├── requirements.txt               # Python dependencies
-└── haarcascade_frontalface_default.xml  # Haar Cascade for face detection
-```
-
-## Requirements
-
-- Python 3.7+
-- PyTorch 2.9.1
-- OpenCV 4.12.0
-- NumPy, Scikit-learn, Matplotlib
-- See `requirements.txt` for complete dependencies
-
-## About This Project
-
-This is a Computer Vision course project developed at **Netaji Subhas University of Technology (NSUT)**.
-
-**Contributors:**
-- Ankit Mishra
-- Amit Kumar
+- **Real-time Detection**: Processes live video feed from the camera to detect faces and classify them as real or spoof.
+- **CNN Model**: A custom CNN architecture trained on color and depth images to distinguish real faces from spoof attempts.
+- **Face Detection**: Utilizes Haar cascades for efficient face localization.
+- **Security Integration**: Automatically locks the screen on macOS when spoofing is detected.
+- **Sliding Window Analysis**: Uses a sliding window of predictions to reduce false positives and ensure consistent detection.
 
 ## Installation
 
-1. Clone the repository:
+### Prerequisites
+
+- Python 3.8 or higher
+- macOS (for screen locking functionality; modify `lock_screen()` function for other OS)
+- Webcam
+
+### Dependencies
+
+Install the required Python packages using pip:
+
 ```bash
-git clone https://github.com/Ankit-Mishra0/anti-face-spoofing.git
-cd anti-face-spoofing
+pip install -r files/requirements.txt
 ```
 
-2. Install dependencies:
+Additionally, install PyTorch (if not included):
+
 ```bash
-pip install -r requirements.txt
+pip install torch torchvision
 ```
+
+### Dataset Preparation
+
+1. Place your dataset in the `dataset/archive/` directory with the following structure:
+
+   ```
+   dataset/archive/
+   ├── train_img/train_img/
+   │   ├── color/
+   │   └── depth/
+   └── test_img/test_img/
+       ├── color/
+       └── depth/
+   ```
+
+2. Run the dataset preparation script:
+   ```bash
+   python files/prepare_dataset.py
+   ```
+   This will organize images into `dataset/real/` and `dataset/spoof/` folders.
+
+### Model Training
+
+To train the CNN model:
+
+```bash
+python files/train.py
+```
+
+The trained model will be saved as `models/face_antispoof_cnn.pth`.
 
 ## Usage
 
-### 1. Prepare Dataset
+### Real-time Detection
 
-Organize your dataset with real and spoofed face images:
-
-```bash
-python prepare_dataset.py
-```
-
-### 2. Train the Model
-
-Train the CNN model on your dataset:
+Run the main application for real-time face anti-spoofing:
 
 ```bash
-python train.py
+python main.py
 ```
 
-**Hyperparameters** (configurable in `train.py`):
-- Batch Size: 32
-- Epochs: 10
-- Learning Rate: 0.001
-- Input Size: 128×128 pixels
+- The application will open a camera feed.
+- Detected faces will be labeled as "REAL" (green) or "SPOOF" (red) with confidence scores.
+- If spoofing is detected in more than 60% of the last 500 frames, the screen will lock.
 
-### 3. Test the Model
+Press 'q' to quit manually.
 
-Evaluate the trained model on test data:
+### Other Scripts
 
-```bash
-python test.py
-```
-
-### 4. Real-time Detection
-
-Run live face anti-spoofing detection using your webcam:
-
-```bash
-python realtime_demo.py
-```
-
-**Controls:**
-- Press `q` to quit the application
-- The system displays:
-  - Green box: Live face detected (confidence score)
-  - Red box: Spoof detected (confidence score)
+- `files/realtime_demotest.py`: Demo script for testing detection.
+- `files/dataset_loader.py`: Utility for loading the dataset.
+- `files/liveness_detector.py`: Additional liveness detection logic.
 
 ## Model Architecture
 
-The `FaceAntiSpoofCNN` model consists of:
+The CNN model consists of:
 
-- **Input**: 3-channel RGB image (128×128)
-- **Conv Layer 1**: 16 filters, 3×3 kernel, ReLU activation + Max Pooling
-- **Conv Layer 2**: 32 filters, 3×3 kernel, ReLU activation + Max Pooling
-- **Fully Connected Layer 1**: 128 units, ReLU activation
-- **Output Layer**: Single neuron with sigmoid activation for binary classification
+- Two convolutional layers (16 and 32 filters, 3x3 kernels)
+- Max pooling layers
+- Two fully connected layers (128 and 1 output)
+- Uses ReLU activation and sigmoid for binary classification.
 
-**Output**:
-- Value close to 0: Real face
-- Value close to 1: Spoofed face
+Input size: 128x128 RGB images.
 
-## Data Format
+## Dataset
 
-The dataset expects:
-- RGB images in 128×128 resolution
-- Labels: 0 for real faces, 1 for spoofed faces
-- Train/validation split: 80/20
+The system is trained on a dataset containing real and spoof face images from color and depth modalities. Images are resized to 128x128 pixels and normalized.
 
-Supported dataset types:
-- Color images (RGB)
-- Depth maps (for enhanced detection)
+- **Real Images**: Genuine face captures.
+- **Spoof Images**: Fake faces from photos, videos, etc.
 
-## Performance Considerations
+## Requirements
 
-- **Class Imbalance**: The training script automatically handles imbalanced datasets using weighted BCE loss
-- **Real-time Speed**: Optimized for CPU inference with fast Haar Cascade preprocessing
-- **Memory**: Designed to run on CPU or GPU with minimal memory requirements
+See `files/requirements.txt` for a full list. Key libraries:
 
-## Testing
-
-Test individual components:
-
-```bash
-# Test camera functionality
-python test_camera.py
-
-# Test dataset loading
-python test_loader.py
-
-# Test real-time demo
-python realtime_demotest.py
-```
-
-## Troubleshooting
-
-- **Camera not detected**: Ensure your webcam is connected and accessible. Test with `test_camera.py`
-- **Model not loading**: Verify `face_antispoof_cnn.pth` exists in the `models/` directory
-- **Poor detection accuracy**: Ensure dataset images are properly preprocessed and labeled
-- **Out of memory**: Reduce `BATCH_SIZE` in `train.py`
-
-## Future Improvements
-
-- [ ] Support for depth-based detection (RGB-D)
-- [ ] Multi-spectral analysis
-- [ ] Domain adaptation for cross-dataset generalization
-- [ ] Hardware acceleration (CUDA/GPU optimization)
-- [ ] Web API for remote inference
-- [ ] Mobile deployment
+- OpenCV
+- PyTorch
+- NumPy
+- scikit-learn
+- dlib
 
 ## License
 
-This project is provided as-is for educational and research purposes.
+This project is for educational purposes. Please check individual library licenses for usage.
 
-## Contributors
+## Acknowledgments
 
-- **Ankit Mishra** - Project Lead & Developer
-- **Amit Kumar** - Developer
-
-## Citation
-
-If you use this project for research or educational purposes, please cite:
-
-```
-@misc{antispoof2026,
-  title={Face Anti-Spoofing Detection using CNN},
-  author={Mishra, Ankit and Kumar, Amit},
-  year={2026},
-  school={Netaji Subhas University of Technology (NSUT)},
-  howpublished={\url{https://github.com/Ankit-Mishra0/anti-face-spoofing}}
-}
-```
-
-## Contact
-
-For questions or suggestions, please reach out to the contributors or open an issue on the GitHub repository.
-
----
-
-For more information on face anti-spoofing techniques, refer to relevant research papers in biometric security and presentation attack detection (PAD).
+- OpenCV for computer vision tasks.
+- PyTorch for deep learning framework.
+- Haar cascade classifier for face detection.
