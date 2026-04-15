@@ -74,7 +74,7 @@ To train on multiple datasets (CASIA and MSU):
 python files/train_multi.py
 ```
 
-The trained models will be saved as `models/face_antispoof_cnn.pth`, `models/multi_dataset_model.pth`.
+The training scripts create models as `models/face_antispoof_cnn.pth` (single dataset) and `models/multi_dataset_model.pth` (multi-dataset), which have been renamed to `models/face_antispoof_v1.pth` and `models/face_antispoof_v2.pth` respectively for version tracking.
 
 ## Usage
 
@@ -135,11 +135,11 @@ This project is for educational purposes. Please check individual library licens
 
 This project evolved through several iterations to improve accuracy and robustness:
 
-1. **Initial Version**: Basic CNN model trained and generalized on the CASIA dataset for binary classification of real vs. spoof faces.
+1. **Initial Version**: A CNN-based model trained on the CASIA dataset for binary classification of real and spoof faces, with limited performance due to lack of dataset diversity.
 
 2. **Confidence Scoring & Application Enhancements**: Introduced confidence scores and threshold-based decision making with dynamic threshold adjustment, real-time confidence display, enhanced spoof detection logic using sliding window analysis, and automatic screen locking functionality to provide more nuanced detection and reduce false positives.
 
-3. **Multi-Dataset Training**: Expanded the training data by incorporating the MSU dataset alongside CASIA, resulting in improved model generalization and the creation of `models/multi_dataset_model.pth`.
+3. **Multi-Dataset Training**: Expanded the training data by incorporating the MSU dataset alongside CASIA, improving robustness and enabling better generalization across diverse spoofing scenarios such as print and replay attacks.
 
 ## Acknowledgments
 
