@@ -9,7 +9,7 @@ facedetector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 
 antispoofmodel = FaceAntiSpoofCNN()
 antispoofmodel.load_state_dict(
-    torch.load("models/face_antispoof_cnn.pth", map_location="cpu")
+    torch.load("models/face_antispoof_v2.pth", map_location="cpu")
 )
 antispoofmodel.eval()
 

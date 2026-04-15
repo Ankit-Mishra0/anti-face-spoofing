@@ -33,24 +33,25 @@ Install the required Python packages using pip:
 pip install -r files/requirements.txt
 ```
 
-Additionally, install PyTorch (if not included):
-
-```bash
-pip install torch torchvision
-```
-
 ### Dataset Preparation
 
-1. Place your dataset in the `dataset/archive/` directory with the following structure:
+1. Place your dataset in the `dataset/` directory. The project supports multiple datasets like CASIA and MSU with the following structure:
 
    ```
-   dataset/archive/
-   ├── train_img/train_img/
-   │   ├── color/
-   │   └── depth/
-   └── test_img/test_img/
-       ├── color/
-       └── depth/
+   dataset/
+   ├── casia/
+   │   ├── real/
+   │   └── spoof/
+   ├── msu/
+   │   ├── real/
+   │   └── spoof/
+   ├── archive/
+   │   ├── train_img/train_img/
+   │   │   ├── color/
+   │   │   └── depth/
+   │   └── test_img/test_img/
+   │       ├── color/
+   │       └── depth/
    ```
 
 2. Run the dataset preparation script:
@@ -61,13 +62,19 @@ pip install torch torchvision
 
 ### Model Training
 
-To train the CNN model:
+To train the CNN model on a single dataset:
 
 ```bash
 python files/train.py
 ```
 
-The trained model will be saved as `models/face_antispoof_cnn.pth`.
+To train on multiple datasets (CASIA and MSU):
+
+```bash
+python files/train_multi.py
+```
+
+The trained models will be saved as `models/face_antispoof_cnn.pth`, `models/multi_dataset_model.pth`.
 
 ## Usage
 
@@ -87,6 +94,7 @@ Press 'q' to quit manually.
 
 ### Other Scripts
 
+- `train_multi.py`: Training script for multiple datasets (CASIA and MSU).
 - `files/realtime_demotest.py`: Demo script for testing detection.
 - `files/dataset_loader.py`: Utility for loading the dataset.
 - `files/liveness_detector.py`: Additional liveness detection logic.
@@ -122,6 +130,16 @@ See `files/requirements.txt` for a full list. Key libraries:
 ## License
 
 This project is for educational purposes. Please check individual library licenses for usage.
+
+## Development Timeline
+
+This project evolved through several iterations to improve accuracy and robustness:
+
+1. **Initial Version**: Basic CNN model trained and generalized on the CASIA dataset for binary classification of real vs. spoof faces.
+
+2. **Confidence Scoring & Application Enhancements**: Introduced confidence scores and threshold-based decision making with dynamic threshold adjustment, real-time confidence display, enhanced spoof detection logic using sliding window analysis, and automatic screen locking functionality to provide more nuanced detection and reduce false positives.
+
+3. **Multi-Dataset Training**: Expanded the training data by incorporating the MSU dataset alongside CASIA, resulting in improved model generalization and the creation of `models/multi_dataset_model.pth`.
 
 ## Acknowledgments
 
